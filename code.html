@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Smart Home Dashboard - Mobile</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appDark: '#0b1120',
+            cardBg: '#131c31',
+            cardBorder: '#243250',
+            glowGreen: '#10b981',
+            glowBlue: '#3b82f6',
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styling">
+    /* Subtle touch feedback and custom shadows to replicate the glow */
+    body {
+      background-color: #0b1120;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .btn-green-glow {
+      box-shadow: 0 4px 18px -2px rgba(16, 185, 129, 0.4);
+    }
+    .btn-green-glow:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px -2px rgba(16, 185, 129, 0.3);
+    }
+    .btn-blue-glow {
+      box-shadow: 0 4px 18px -2px rgba(59, 130, 246, 0.45);
+    }
+    .btn-blue-glow:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px -2px rgba(59, 130, 246, 0.3);
+    }
+    .badge-pill-off {
+      background-color: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+    .badge-pill-sensor {
+      background-color: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 flex justify-center items-start antialiased px-3 py-4 sm:p-6 pb-8">
+<!-- Mobile View Container (~390px native layout) -->
+<div class="w-full max-w-[420px] flex flex-col gap-3.5">
+<!-- BEGIN: Header -->
+<header class="w-full bg-[#131c31] border border-[#243250] rounded-2xl p-3.5 shadow-lg backdrop-blur-sm" data-purpose="app-header">
+<div class="flex items-center justify-between">
+<!-- Brand / Identity -->
+<div class="flex items-center space-x-2.5">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-blue-500/20 border border-slate-700/60 flex items-center justify-center text-xl shadow-inner">
+            🏡
+          </div>
+<div>
+<h1 class="text-sm font-bold text-white tracking-tight leading-tight">Smart Home Dashboard</h1>
+<div class="flex items-center space-x-1.5 mt-0.5">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<span class="text-[11px] font-medium text-slate-400">ESP32 Connected Hub</span>
+</div>
+</div>
+</div>
+<!-- IP Indicator Badge -->
+<div class="bg-[#0b1120]/80 border border-[#243250] px-2 py-1 rounded-lg text-right">
+<span class="text-[11px] font-mono text-slate-400">IP: <span class="text-sky-400 font-semibold">.100</span></span>
+</div>
+</div>
+</header>
+<!-- END: Header -->
+<!-- BEGIN: MainContent (Grid 2-column + 5th item full span) -->
+<main class="grid grid-cols-2 gap-3" data-purpose="appliances-controls">
+<!-- Row 1, Item 1: Lighting -->
+<section class="bg-[#131c31] border border-[#243250] rounded-2xl p-3.5 shadow-md flex flex-col justify-between transition-all" data-purpose="lighting-card">
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="text-xl">💡</span>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-[#1a253f] text-slate-400 border border-slate-700/50">
+      ZONE A
+    </span>
+</div>
+<h2 class="text-sm font-semibold text-white truncate mb-2">Lighting</h2>
+<div class="mb-3">
+<div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full badge-pill-off text-[11px] font-medium text-rose-300" id="light-status">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+<span class="truncate">Light is OFF</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 bg-[#10b981] hover:bg-[#059669] text-white font-semibold rounded-xl text-xs transition-all duration-150 btn-green-glow active:outline-none flex items-center justify-center space-x-1" data-purpose="toggle-light-btn" id="light-btn" onclick="toggleSwitch('light')" type="button">
+<span>Turn ON</span>
+</button>
+</section>
+<!-- Row 1, Item 2: Cooling (Fan) -->
+<section class="bg-[#131c31] border border-[#243250] rounded-2xl p-3.5 shadow-md flex flex-col justify-between transition-all" data-purpose="fan-card">
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="text-xl">🌀</span>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-[#1a253f] text-slate-400 border border-slate-700/50">
+      LIVING
+    </span>
+</div>
+<h2 class="text-sm font-semibold text-white truncate mb-2">Cooling (Fan)</h2>
+<div class="mb-3">
+<div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full badge-pill-off text-[11px] font-medium text-rose-300" id="fan-status">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+<span class="truncate">Fan is OFF</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 bg-[#10b981] hover:bg-[#059669] text-white font-semibold rounded-xl text-xs transition-all duration-150 btn-green-glow active:outline-none flex items-center justify-center space-x-1" data-purpose="toggle-fan-btn" id="fan-btn" onclick="toggleSwitch('fan')" type="button">
+<span>Turn ON</span>
+</button>
+</section>
+<!-- Row 2, Item 3: Heating (Heater LED) -->
+<section class="bg-[#131c31] border border-[#243250] rounded-2xl p-3.5 shadow-md flex flex-col justify-between transition-all" data-purpose="heating-card">
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="text-xl">🔥</span>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-[#1a253f] text-slate-400 border border-slate-700/50">
+      BEDROOM
+    </span>
+</div>
+<h2 class="text-sm font-semibold text-white truncate mb-2">Heating</h2>
+<div class="mb-3">
+<div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full badge-pill-off text-[11px] font-medium text-rose-300" id="heater-status">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+<span class="truncate">Heater is OFF</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 bg-[#10b981] hover:bg-[#059669] text-white font-semibold rounded-xl text-xs transition-all duration-150 btn-green-glow active:outline-none flex items-center justify-center space-x-1" data-purpose="toggle-heater-btn" id="heater-btn" onclick="toggleSwitch('heater')" type="button">
+<span>Turn ON</span>
+</button>
+</section>
+<!-- Row 2, Item 4: Door Access -->
+<section class="bg-[#131c31] border border-[#243250] rounded-2xl p-3.5 shadow-md flex flex-col justify-between transition-all" data-purpose="door-card">
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="text-xl">🚪</span>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-[#1a253f] text-slate-400 border border-slate-700/50">
+      LOCK
+    </span>
+</div>
+<h2 class="text-sm font-semibold text-white truncate mb-2">Door Lock</h2>
+<div class="mb-3">
+<div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full badge-pill-off text-[11px] font-medium text-rose-300">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+<span class="truncate">Door Locked</span>
+</div>
+</div>
+</div>
+<!-- Door Action Button -->
+<div class="grid grid-cols-2 gap-2"><button class="w-full py-2.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-semibold rounded-xl text-xs transition-all duration-150 btn-blue-glow active:outline-none flex items-center justify-center space-x-1" data-purpose="open-door-btn" id="door-btn" onclick="toggleDoor()" type="button"><span>Open Door</span></button><button class="w-full py-2.5 bg-[#1a253f] hover:bg-[#243250] border border-[#243250] text-slate-300 font-semibold rounded-xl text-xs transition-all duration-150 active:outline-none flex items-center justify-center space-x-1" data-purpose="close-door-btn" id="door-close-btn" onclick="if(deviceStates.doorOpen){toggleDoor();}else{sendCommand('door','LOCK');}" type="button"><span>Close Door</span></button></div>
+</section>
+<!-- Item 5: Full Width Security Monitor & PIR Sensor (Spans 2 columns) -->
+<section class="col-span-2 bg-[#131c31] border border-[#243250] rounded-2xl p-4 shadow-md transition-all" data-purpose="security-sensor-card">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-2">
+<span class="text-lg">🛡️</span>
+<h2 class="text-sm font-semibold text-white">Security &amp; Motion Guard</h2>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-[#1a253f] text-slate-400 border border-slate-700/50">
+      ENTRANCE
+    </span>
+</div>
+<!-- PIR Sensor Inner Container -->
+<div class="bg-[#0e1627] border border-[#1e2a44] rounded-xl p-3 flex items-center justify-between" data-purpose="sensor-monitor">
+<div class="flex items-center space-x-2">
+<span class="text-base">📡</span>
+<div>
+<div class="text-xs font-medium text-slate-300">PIR Motion Sensor</div>
+<div class="text-[10px] text-slate-500">Real-time perimeter radar</div>
+</div>
+</div>
+<div class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full badge-pill-sensor text-xs font-semibold text-emerald-400" id="pir-status">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<span>No Motion Detected</span>
+</div>
+</div>
+</section>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: FooterStatus -->
+<footer class="text-center pt-1 pb-1" data-purpose="sync-footer">
+<p class="text-xs text-slate-500 font-medium tracking-wide flex items-center justify-center gap-1.5">
+<span>Active IoT Controller</span>
+<span class="text-slate-600">•</span>
+<span>Auto-sync every 2s</span>
+</p>
+</footer>
+<!-- END: FooterStatus -->
+</div>
+<!-- BEGIN: ESP32 JavaScript Functionality -->
+<script>
+  const esp32_ip = "192.168.1.100";
+  let deviceStates = {
+    light: false,
+    fan: false,
+    heater: false,
+    doorOpen: false
+  };
+
+  function sendCommand(device, action) {
+    console.log(`Sending command to ESP32 [${esp32_ip}]: ${device} -> ${action}`);
+    // Example: fetch(`http://${esp32_ip}/${device}/${action}`).catch(e => console.log(e));
+  }
+
+  function toggleSwitch(device) {
+    deviceStates[device] = !deviceStates[device];
+    const isNowOn = deviceStates[device];
+    const statusEl = document.getElementById(`${device}-status`);
+    const btnEl = document.getElementById(`${device}-btn`);
+
+    if (isNowOn) {
+      if (statusEl) {
+        statusEl.className = "inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full badge-pill-sensor text-[11px] font-medium text-emerald-300";
+        statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span class="truncate">${device.charAt(0).toUpperCase() + device.slice(1)} is ON</span>`;
+      }
+      if (btnEl) {
+        btnEl.innerText = "Turn OFF";
+        btnEl.classList.remove('bg-[#10b981]', 'hover:bg-[#059669]', 'btn-green-glow');
+        btnEl.classList.add('bg-rose-600', 'hover:bg-rose-700');
+      }
+      sendCommand(device, "ON");
+    } else {
+      if (statusEl) {
+        statusEl.className = "inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full badge-pill-off text-[11px] font-medium text-rose-300";
+        statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span class="truncate">${device.charAt(0).toUpperCase() + device.slice(1)} is OFF</span>`;
+      }
+      if (btnEl) {
+        btnEl.innerText = "Turn ON";
+        btnEl.classList.remove('bg-rose-600', 'hover:bg-rose-700');
+        btnEl.classList.add('bg-[#10b981]', 'hover:bg-[#059669]', 'btn-green-glow');
+      }
+      sendCommand(device, "OFF");
+    }
+  }
+
+  function toggleDoor() {
+    deviceStates.doorOpen = !deviceStates.doorOpen;
+    const btnEl = document.getElementById("door-btn");
+    if (deviceStates.doorOpen) {
+      btnEl.innerText = "Lock Door";
+      btnEl.classList.remove('bg-[#3b82f6]', 'hover:bg-[#2563eb]');
+      btnEl.classList.add('bg-amber-600', 'hover:bg-amber-700');
+      sendCommand("door", "OPEN");
+    } else {
+      btnEl.innerText = "Open Door";
+      btnEl.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+      btnEl.classList.add('bg-[#3b82f6]', 'hover:bg-[#2563eb]');
+      sendCommand("door", "LOCK");
+    }
+  }
+
+  // Periodic status poll (ESP32 heartbeat)
+  setInterval(() => {
+    // Poll telemetry from ESP32 hub
+    console.log(`Polling heartbeat from http://${esp32_ip}/status`);
+  }, 2000);
+</script>
+<!-- END: ESP32 JavaScript Functionality -->
+</body></html>
